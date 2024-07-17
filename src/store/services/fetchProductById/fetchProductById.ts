@@ -17,8 +17,6 @@ export const fetchProductById = createAsyncThunk<
                     throw new Error();
                 }
 
-                console.log('response', response)
-
                 return response;
             } catch (e) {
                 return rejectWithValue('error');
