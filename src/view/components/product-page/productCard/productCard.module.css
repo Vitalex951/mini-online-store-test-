@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.mainProductWrapper {
+    flex: 0.5;
+
+}
+
+.productWrapper {
+    border: 1px dotted;
+    padding: 5px 3px;
+}
+
+.productName {
+    font-weight: 700;
+}
