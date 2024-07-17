@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import { productPageReducer } from './reducers/product-page';
 import {IProductPageRepository} from "../services/products/interfaces";
 import {MockProductPageGateway} from "../gateways/product-page";
 import {useDispatch} from "react-redux";
+import {productPageReducer} from "./slice/product-page-slice";
 
 export const rootReducer = combineReducers({
   productPage: productPageReducer,
