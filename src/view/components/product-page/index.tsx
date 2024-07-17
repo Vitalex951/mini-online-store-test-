@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect} from 'react';
+import {FC, useCallback, useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import {ProductCard} from "./productCard/productCard";
 import styles from './style/productPage.module.css'
@@ -13,10 +13,13 @@ import {
     productSelectorIsLoading
 } from "../../../store/selectors/product-page";
 import {productPageActions} from "../../../store/slice/product-page-slice";
-import {Product} from "../../../models";
+import {LinkedProduct, Product} from "../../../models";
+import {Modal} from "../common/modal";
 
 export const ProductPage: FC = () => {
     const params = useParams<{ productId: string }>()
+    const [activeProductModal, setActiveProductModal] = useState<LinkedProduct | null>(null)
+
     const dispatch = useAppDispatch()
 
     const productItem = useSelector(productSelector)
@@ -39,6 +42,7 @@ export const ProductPage: FC = () => {
             dispatch(fetchProductById(id))
         }
         return () => {
+            // при размонтировании компоненты, мы подчищаем наши данные со стейта
             dispatch(clearData())
         }
     }, [clearData, dispatch, params?.productId])
@@ -51,13 +55,13 @@ export const ProductPage: FC = () => {
         dispatch(deleteComparingProduct(id))
     }, [deleteComparingProduct, dispatch]);
 
-    const shouldRenderProducts = !isLoading && !!productItem && !error
-    const shouldRenderLoader = isLoading
-    const shouldRenderError = !!error
+    const onShowModalProduct = (product: LinkedProduct) => {
+        setActiveProductModal(product)
+    }
 
-    const shouldRenderLinkedProductList = !!linkedProductList && linkedProductList.length > 0 && !!productItem && !isLoading && !error
-
-    const shouldRenderCompareList = !!compareList && compareList.length > 0
+    const onCloseModalProduct = () => {
+        setActiveProductModal(null)
+    }
 
     const componentLinkedProductList = linkedProductList?.map(item => {
         if (item.linkType === 'analog') {
@@ -67,14 +71,22 @@ export const ProductPage: FC = () => {
         }
 
         if (item.linkType === 'related') {
-            return <div key={item.id}>Сопуствующий товар : <button>{item.name}</button></div>
+            return <div key={item.id}>Сопуствующий товар : <button onClick={() => onShowModalProduct(item)}>{item.name}</button></div>
         }
         return <div key={item.id}>
-            <button>{item.name}</button>
+            <button onClick={() => onShowModalProduct(item)}>{item.name}</button>
         </div>
     })
 
-    return <main>
+    const shouldRenderProducts = !isLoading && !!productItem && !error
+    const shouldRenderLoader = isLoading
+    const shouldRenderError = !!error
+
+    const shouldRenderLinkedProductList = !!linkedProductList && linkedProductList.length > 0 && !!productItem && !isLoading && !error
+
+    const shouldRenderCompareList = !!compareList && compareList.length > 0
+
+    return <div>
         {shouldRenderProducts && (
 
           <div className={styles.container}>
@@ -104,5 +116,9 @@ export const ProductPage: FC = () => {
             {componentLinkedProductList}
         </ul>}
 
-    </main>;
+        {activeProductModal && <Modal onClose={onCloseModalProduct}>
+          <ProductCard product={{...activeProductModal}}/>
+        </Modal>}
+
+    </div>;
 };
