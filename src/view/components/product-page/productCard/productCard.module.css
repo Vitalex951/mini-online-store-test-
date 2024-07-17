@@ -1,16 +1,14 @@
-.container {
-    display: flex;
-    width: 100%;
-}
-
 .mainProductWrapper {
-    flex: 0.5;
-
+    width: 50%;
 }
 
 .productWrapper {
     border: 1px dotted;
     padding: 5px 3px;
+}
+
+.productNoWrap {
+    white-space: nowrap;
 }
 
 .productName {

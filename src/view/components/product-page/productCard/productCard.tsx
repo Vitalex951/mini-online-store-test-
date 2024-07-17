@@ -20,14 +20,12 @@ export const ProductCard = memo((props: ProductCardPropsType) => {
     }
 
     return (
-      <div className={styles.container}>
-          <div className={classNames(styles.productWrapper, mods, [])}>
-              <div className={styles.productName}>
-                  {product.name}
-              </div>
-              <div>
-                  Price: {product.price}
-              </div>
+      <div className={classNames(styles.productWrapper, mods, [])}>
+          <div className={classNames(styles.productName, {}, [styles.productNoWrap])}>
+              {product.name}
+          </div>
+          <div className={styles.productNoWrap}>
+              Price: {product.price}
           </div>
       </div>
     );
