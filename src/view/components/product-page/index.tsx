@@ -1,4 +1,4 @@
-import {FC, useEffect} from 'react';
+import {FC, useCallback, useEffect} from 'react';
 import {useParams} from "react-router-dom";
 import {ProductCard} from "./productCard/productCard";
 import styles from './style/productPage.module.css'
@@ -13,6 +13,7 @@ import {
     productSelectorIsLoading
 } from "../../../store/selectors/product-page";
 import {productPageActions} from "../../../store/slice/product-page-slice";
+import {Product} from "../../../models";
 
 export const ProductPage: FC = () => {
     const params = useParams<{ productId: string }>()
@@ -26,26 +27,42 @@ export const ProductPage: FC = () => {
 
     const linkedProductList = useSelector(linkedProductsSelector)
 
+    const {
+        deleteComparingProduct,
+        setComparingProducts,
+        clearData
+    } = productPageActions
+
     useEffect(() => {
         const id = params?.productId
         if (!!id) {
             dispatch(fetchProductById(id))
         }
         return () => {
-            dispatch(productPageActions.clearData())
+            dispatch(clearData())
         }
-    }, [dispatch, params?.productId])
+    }, [clearData, dispatch, params?.productId])
+
+    const onSetComparingProduct =(product: Product) => {
+        dispatch(setComparingProducts(product))
+    }
+
+    const onRemoveComparingProduct = useCallback((id: string) => {
+        dispatch(deleteComparingProduct(id))
+    }, [deleteComparingProduct, dispatch]);
 
     const shouldRenderProducts = !isLoading && !!productItem && !error
     const shouldRenderLoader = isLoading
     const shouldRenderError = !!error
 
-    const shouldLinkedProductList = !! linkedProductList &&  linkedProductList.length > 0 && !!productItem && !isLoading && !error
+    const shouldRenderLinkedProductList = !!linkedProductList && linkedProductList.length > 0 && !!productItem && !isLoading && !error
+
+    const shouldRenderCompareList = !!compareList && compareList.length > 0
 
     const componentLinkedProductList = linkedProductList?.map(item => {
         if (item.linkType === 'analog') {
             return <div key={item.id}>
-                Аналог : <button>{item.name}</button>
+                Аналог : <button onClick={() => onSetComparingProduct(item)}>{item.name}</button>
             </div>
         }
 
@@ -63,14 +80,14 @@ export const ProductPage: FC = () => {
           <div className={styles.container}>
               <ProductCard product={productItem} productType={'main'}/>
               <div className={styles.comparisonContainer}>
-                  <div className={styles.wrapperComparison}>
-                      <div style={{position: 'relative'}}>
-                          <ProductCard product={productItem}/>
-                          <div className={styles.text}>Сравнение</div>
-                      </div>
-                      <ProductCard product={productItem}/>
-                      <ProductCard product={productItem}/>
-                  </div>
+                  {shouldRenderCompareList && <div className={styles.wrapperComparison}>
+                      {compareList.map((item, index) => index === 0
+                        ? <div className={styles.relative}>
+                            <ProductCard onClick={onRemoveComparingProduct} product={item}/>
+                            <div className={styles.text}>Сравнение</div>
+                        </div>
+                        : <ProductCard  onClick={onRemoveComparingProduct} product={item}/>)}
+                  </div>}
               </div>
           </div>
         )}
@@ -79,7 +96,7 @@ export const ProductPage: FC = () => {
 
         {shouldRenderError && <div>{error}</div>}
 
-        {shouldLinkedProductList && <ul>
+        {shouldRenderLinkedProductList && <ul>
             {componentLinkedProductList}
         </ul>}
 

@@ -44,7 +44,7 @@ export const productPageSlice = createSlice({
         setComparingProducts(state, action: PayloadAction<Product>) {
             state.comparingProducts = state?.comparingProducts ? [...state?.comparingProducts, action.payload] : [action.payload]
         },
-        deleteComparingProducts(state, action: PayloadAction<string>) {
+        deleteComparingProduct(state, action: PayloadAction<string>) {
             state.comparingProducts = state?.comparingProducts?.filter(el => el.id !== action.payload)
         },
 

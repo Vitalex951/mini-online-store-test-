@@ -8,6 +8,10 @@
     flex-direction: column;
 }
 
+.relative {
+    position: relative;
+}
+
 .wrapperComparison {
     display: flex;
     gap: 10px;
@@ -21,7 +25,6 @@
 }
 
 .text {
-   position: absolute;
+    position: absolute;
     top: -23px
-
 }

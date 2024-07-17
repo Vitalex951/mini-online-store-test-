@@ -8,12 +8,18 @@ type ProductType = 'main' | 'secondary';
 type ProductCardPropsType = {
     product: Product
     productType?: ProductType
+    onClick?: (id: string) => void
 }
 export const ProductCard = memo((props: ProductCardPropsType) => {
     const {
         product,
-        productType = 'secondary'
+        productType = 'secondary',
+      onClick
     } = props
+
+    const onClickHandler = () => {
+        onClick?.(product.id)
+    }
 
     const mods: Mods = {
         [styles.mainProductWrapper]: productType === 'main'
@@ -23,6 +29,7 @@ export const ProductCard = memo((props: ProductCardPropsType) => {
       <div className={classNames(styles.productWrapper, mods, [])}>
           <div className={classNames(styles.productName, {}, [styles.productNoWrap])}>
               {product.name}
+              {!!onClick && <button onClick={onClickHandler}>X</button>}
           </div>
           <div className={styles.productNoWrap}>
               Price: {product.price}
