@@ -6,6 +6,7 @@ import {useAppDispatch} from "../../../store";
 import {fetchProductById} from "../../../store/services/fetchProductById/fetchProductById";
 import {useSelector} from "react-redux";
 import {
+    compareListSelector,
     productSelector,
     productSelectorError,
     productSelectorIsLoading
@@ -14,9 +15,13 @@ import {
 export const ProductPage: FC = () => {
     const params = useParams<{ productId: string }>()
     const dispatch = useAppDispatch()
-    const productCard = useSelector(productSelector)
+
+    const productItem = useSelector(productSelector)
     const isLoading = useSelector(productSelectorIsLoading)
     const error = useSelector(productSelectorError)
+
+    const compareList = useSelector(compareListSelector)
+
 
     useEffect(() => {
         const id = params?.productId
@@ -26,24 +31,25 @@ export const ProductPage: FC = () => {
     }, [dispatch, params?.productId])
 
 
-    console.log('productCard', productCard)
-    const shouldRenderProducts = !isLoading && !!productCard && !error
+    const shouldRenderProducts = !isLoading && !!productItem && !error
     const shouldRenderLoader = isLoading
     const shouldRenderError = !!error
+
+    const shouldCompareList = !!compareList && compareList.length > 0 && !!productItem && !isLoading && !error
 
     return <main>
         {shouldRenderProducts && (
 
           <div className={styles.container}>
-              <ProductCard product={productCard} productType={'main'}/>
+              <ProductCard product={productItem} productType={'main'}/>
               <div className={styles.comparisonContainer}>
                   <div className={styles.wrapperComparison}>
                       <div style={{position: 'relative'}}>
-                          <ProductCard product={productCard}/>
+                          <ProductCard product={productItem}/>
                           <div className={styles.text}>Сравнение</div>
                       </div>
-                      <ProductCard product={productCard}/>
-                      <ProductCard product={productCard}/>
+                      <ProductCard product={productItem}/>
+                      <ProductCard product={productItem}/>
                   </div>
               </div>
           </div>
@@ -52,6 +58,21 @@ export const ProductPage: FC = () => {
         {shouldRenderLoader && <div>...Loading</div>}
 
         {shouldRenderError && <div>{error}</div>}
+
+        {shouldCompareList && <ul>
+            {compareList.map(item => {
+                if (item.category?.id === productItem?.category?.id) {
+                    return <div>
+                        Аналог : {item.name}
+                    </div>
+                }
+
+                if (item.category?.id?.[0] === productItem?.category?.id?.[0]) {
+                    return <div>Сопуствующий товар : {item.name} </div>
+                }
+                return <div>{item.name} </div>
+            })}
+        </ul>}
 
     </main>;
 };
