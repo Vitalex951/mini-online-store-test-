@@ -4,9 +4,11 @@ import {IProductPageRepository} from "../services/products/interfaces";
 import {MockProductPageGateway} from "../gateways/product-page";
 import {useDispatch} from "react-redux";
 import {productPageReducer} from "./slice/product-page-slice";
+import {categoriesReducer} from "./slice/categories-slice";
 
 export const rootReducer = combineReducers({
   productPage: productPageReducer,
+  categories: categoriesReducer,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 
