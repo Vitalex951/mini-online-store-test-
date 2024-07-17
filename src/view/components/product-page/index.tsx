@@ -43,7 +43,7 @@ export const ProductPage: FC = () => {
         }
     }, [clearData, dispatch, params?.productId])
 
-    const onSetComparingProduct =(product: Product) => {
+    const onSetComparingProduct = (product: Product) => {
         dispatch(setComparingProducts(product))
     }
 
@@ -82,11 +82,15 @@ export const ProductPage: FC = () => {
               <div className={styles.comparisonContainer}>
                   {shouldRenderCompareList && <div className={styles.wrapperComparison}>
                       {compareList.map((item, index) => index === 0
-                        ? <div className={styles.relative}>
+                        ? <div key={item.id} className={styles.relative}>
                             <ProductCard onClick={onRemoveComparingProduct} product={item}/>
                             <div className={styles.text}>Сравнение</div>
                         </div>
-                        : <ProductCard  onClick={onRemoveComparingProduct} product={item}/>)}
+                        : <ProductCard
+                          key={item.id}
+                          onClick={onRemoveComparingProduct}
+                          product={item}
+                        />)}
                   </div>}
               </div>
           </div>

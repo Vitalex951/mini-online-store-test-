@@ -42,7 +42,10 @@ export const productPageSlice = createSlice({
 
         //Сравнение продуктов
         setComparingProducts(state, action: PayloadAction<Product>) {
-            state.comparingProducts = state?.comparingProducts ? [...state?.comparingProducts, action.payload] : [action.payload]
+            // проверяем, есть ли элемент с таким же id, что и добавляемыый продукт
+            if(!state?.comparingProducts?.some(el => el.id === action.payload.id)) {
+                state.comparingProducts = state?.comparingProducts ? [...state?.comparingProducts, action.payload] : [action.payload]
+            }
         },
         deleteComparingProduct(state, action: PayloadAction<string>) {
             state.comparingProducts = state?.comparingProducts?.filter(el => el.id !== action.payload)
