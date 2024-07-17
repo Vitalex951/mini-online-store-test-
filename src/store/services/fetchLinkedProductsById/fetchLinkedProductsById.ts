@@ -1,22 +1,33 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {ThunkConfig} from "../../index";
-import {Product} from "../../../models";
+import {LinkedProduct, Product} from "../../../models";
+import {checkCategoryExists} from "../../../utils/checkCategoryExists/checkCategoryExists";
 
 export const fetchLinkedProductsById = createAsyncThunk<
-  Product[],
-  string,
+  LinkedProduct[],
+  { productId: string, productIdCategory?: string },
   ThunkConfig<string>
 >(
   'product-page-slice/fetchLinkedProductsById',
-  async (productId, thunkAPI) => {
+  async ({productId, productIdCategory}, thunkAPI) => {
       const {extra, rejectWithValue} = thunkAPI;
       try {
+          const categories = await extra.api.getCategories()
           const response = await extra.api.getLinkedProducts(productId)
-          console.log('responseresponse', response)
           if (!response) {
               throw new Error();
           }
-          return response;
+          return response?.map(item => {
+              const categoryId = item.category?.id
+              if (categoryId === productIdCategory) {
+                  return {...item, linkType: 'analog'}
+              }
+
+              if (!!categories && categoryId && checkCategoryExists(categoryId, categories)) {
+                  return {...item, linkType: 'related'}
+              }
+              return {...item, linkType: undefined}
+          })
       } catch (e) {
           return rejectWithValue('error');
       }

@@ -15,7 +15,7 @@ const initialState: CatalogPageState = {
     product: undefined,
     linkedProducts: undefined,
     comparingProducts: undefined,
-    isLoading: false,
+    isLoading: true,
     error: null,
 };
 
@@ -44,6 +44,18 @@ export const productPageSlice = createSlice({
         setComparingProducts(state, action: PayloadAction<Product>) {
             state.comparingProducts = state?.comparingProducts ? [...state?.comparingProducts, action.payload] : [action.payload]
         },
+        deleteComparingProducts(state, action: PayloadAction<string>) {
+            state.comparingProducts = state?.comparingProducts?.filter(el => el.id !== action.payload)
+        },
+
+        //очистка данных
+        clearData(state) {
+            state.linkedProducts = undefined
+            state.comparingProducts = undefined
+            state.product = undefined
+            state.error = null
+            state.isLoading = true
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -62,8 +74,8 @@ export const productPageSlice = createSlice({
           })
 
           // получение аналогов/сопуствующих товаров
-          .addCase(fetchLinkedProductsById.fulfilled, (state, action: PayloadAction<Product[]>) => {
-              state.comparingProducts = action.payload;
+          .addCase(fetchLinkedProductsById.fulfilled, (state, action: PayloadAction<LinkedProduct[]>) => {
+              state.linkedProducts = action.payload
           });
     },
 })

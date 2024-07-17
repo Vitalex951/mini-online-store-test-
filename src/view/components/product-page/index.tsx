@@ -7,10 +7,12 @@ import {fetchProductById} from "../../../store/services/fetchProductById/fetchPr
 import {useSelector} from "react-redux";
 import {
     compareListSelector,
+    linkedProductsSelector,
     productSelector,
     productSelectorError,
     productSelectorIsLoading
 } from "../../../store/selectors/product-page";
+import {productPageActions} from "../../../store/slice/product-page-slice";
 
 export const ProductPage: FC = () => {
     const params = useParams<{ productId: string }>()
@@ -22,20 +24,38 @@ export const ProductPage: FC = () => {
 
     const compareList = useSelector(compareListSelector)
 
+    const linkedProductList = useSelector(linkedProductsSelector)
 
     useEffect(() => {
         const id = params?.productId
         if (!!id) {
             dispatch(fetchProductById(id))
         }
+        return () => {
+            dispatch(productPageActions.clearData())
+        }
     }, [dispatch, params?.productId])
-
 
     const shouldRenderProducts = !isLoading && !!productItem && !error
     const shouldRenderLoader = isLoading
     const shouldRenderError = !!error
 
-    const shouldCompareList = !!compareList && compareList.length > 0 && !!productItem && !isLoading && !error
+    const shouldLinkedProductList = !! linkedProductList &&  linkedProductList.length > 0 && !!productItem && !isLoading && !error
+
+    const componentLinkedProductList = linkedProductList?.map(item => {
+        if (item.linkType === 'analog') {
+            return <div key={item.id}>
+                Аналог : <button>{item.name}</button>
+            </div>
+        }
+
+        if (item.linkType === 'related') {
+            return <div key={item.id}>Сопуствующий товар : <button>{item.name}</button></div>
+        }
+        return <div key={item.id}>
+            <button>{item.name}</button>
+        </div>
+    })
 
     return <main>
         {shouldRenderProducts && (
@@ -59,19 +79,8 @@ export const ProductPage: FC = () => {
 
         {shouldRenderError && <div>{error}</div>}
 
-        {shouldCompareList && <ul>
-            {compareList.map(item => {
-                if (item.category?.id === productItem?.category?.id) {
-                    return <div>
-                        Аналог : {item.name}
-                    </div>
-                }
-
-                if (item.category?.id?.[0] === productItem?.category?.id?.[0]) {
-                    return <div>Сопуствующий товар : {item.name} </div>
-                }
-                return <div>{item.name} </div>
-            })}
+        {shouldLinkedProductList && <ul>
+            {componentLinkedProductList}
         </ul>}
 
     </main>;
