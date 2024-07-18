@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {ThunkConfig} from "../../index";
-import {LinkedProduct, Product} from "../../../models";
+import {LinkedProduct} from "../../../models";
 import {checkCategoryExists} from "../../../utils/checkCategoryExists/checkCategoryExists";
 
 export const fetchLinkedProductsById = createAsyncThunk<
