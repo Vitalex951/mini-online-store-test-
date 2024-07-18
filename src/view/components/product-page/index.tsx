@@ -65,17 +65,18 @@ export const ProductPage: FC = () => {
 
     const componentLinkedProductList = linkedProductList?.map(item => {
         if (item.linkType === 'analog') {
-            return <div key={item.id}>
+            return <li key={item.id}>
                 Аналог : <button onClick={() => onSetComparingProduct(item)}>{item.name}</button>
-            </div>
+            </li>
         }
 
         if (item.linkType === 'related') {
-            return <div key={item.id}>Сопуствующий товар : <button onClick={() => onShowModalProduct(item)}>{item.name}</button></div>
+            return <li key={item.id}>Сопуствующий товар : <button
+              onClick={() => onShowModalProduct(item)}>{item.name}</button></li>
         }
-        return <div key={item.id}>
+        return <li key={item.id}>
             <button onClick={() => onShowModalProduct(item)}>{item.name}</button>
-        </div>
+        </li>
     })
 
     const shouldRenderProducts = !isLoading && !!productItem && !error
