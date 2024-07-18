@@ -36,6 +36,21 @@ export const ProductPage: FC = () => {
         clearData
     } = productPageActions
 
+    useEffect(()=> {
+        const closeModalPressButtonBack = () => {
+            setActiveProductModal(null)
+        }
+        if(!!activeProductModal) {
+            window.history.pushState(null, document.title, window.location.href);
+            window.addEventListener('popstate', closeModalPressButtonBack); 
+        }
+
+        return () => {
+            window.removeEventListener('popstate', closeModalPressButtonBack)
+        }
+       
+    }, [activeProductModal])
+
     useEffect(() => {
         if (!!productItem) {
             console.log(`Пользователь посмотрел ${productItem?.name}`)
@@ -122,6 +137,8 @@ export const ProductPage: FC = () => {
               </div>
           </div>
         )}
+
+
 
         {shouldRenderLoader && <div>...Loading</div>}
 
