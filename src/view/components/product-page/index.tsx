@@ -37,6 +37,18 @@ export const ProductPage: FC = () => {
     } = productPageActions
 
     useEffect(() => {
+        if (!!productItem) {
+            console.log(`Пользователь посмотрел ${productItem?.name}`)
+        }
+        return () => {
+            if (!!productItem) {
+                console.log(`Пользователь ушел со страницы ${productItem?.name}`)
+            }
+        }
+    }, [productItem])
+
+
+    useEffect(() => {
         const id = params?.productId
         if (!!id) {
             dispatch(fetchProductById(id))
@@ -49,6 +61,7 @@ export const ProductPage: FC = () => {
 
     const onSetComparingProduct = (product: Product) => {
         dispatch(setComparingProducts(product))
+        console.log(`Пользователь добавил товар для сравнения ${product?.name}`)
     }
 
     const onRemoveComparingProduct = useCallback((id: string) => {
@@ -57,6 +70,7 @@ export const ProductPage: FC = () => {
 
     const onShowModalProduct = (product: LinkedProduct) => {
         setActiveProductModal(product)
+        console.log(`Пользователь посмотрел аналог товара ${product?.name}`)
     }
 
     const onCloseModalProduct = () => {
